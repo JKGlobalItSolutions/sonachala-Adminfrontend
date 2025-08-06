@@ -1,8 +1,3 @@
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
@@ -42,59 +37,25 @@ const PaymentPage = () => {
               urls.push(data.latestProofUrl);
             }
 
-
-
-            // allProofs.push({
-            //   id: docSnap.id,
-            //   userId,
-            //   guestName: data["Full Name"] || "Guest",
-            //   guestPhone: data["Phone Number"] || "N/A",
-            //   guestEmail: data["Email Address"] || "N/A",
-            //   confirmationId: data["confirmationId"] || "N/A",
-            //   checkIn: data["Check-In Date"]
-            //     ? new Date(
-            //         data["Check-In Date"].seconds * 1000
-            //       ).toLocaleDateString("en-IN")
-            //     : "N/A",
-            //   totalPrice: data["Total Price"] || 0,
-            //   paymentStatus: data["Payment Status"] || "Pending",
-            //   paymentProofImages: urls,
-            //   timestamp: data.createdAt?.seconds
-            //     ? new Date(data.createdAt.seconds * 1000)
-            //     : new Date(0),
-            // });
-
-
-
-
-
-allProofs.push({
-  id: docSnap.id,
-  userId,
-  guestName: data["Full Name"] || "Guest",
-  guestPhone: data["Phone Number"] || "N/A",
-  guestEmail: data["Email Address"] || "N/A",
-  confirmationId: data["confirmationId"] || "N/A",
-  checkIn: data["Check-In Date"]
-    ? new Date(data["Check-In Date"].seconds * 1000).toLocaleDateString("en-IN")
-    : "N/A",
-  checkOut: data["Check-Out Date"]
-    ? new Date(data["Check-Out Date"].seconds * 1000).toLocaleDateString("en-IN")
-    : "N/A",
-  totalPrice: data["Total Price"] || 0,
-  paymentStatus: data["Payment Status"] || "Pending",
-  paymentProofImages: urls,
-  timestamp: data.createdAt?.seconds
-    ? new Date(data.createdAt.seconds * 1000)
-    : new Date(0),
-});
-
-
-
-
-
-
-
+            allProofs.push({
+              id: docSnap.id,
+              userId,
+              guestName: data["Full Name"] || "Guest",
+              guestPhone: data["Phone Number"] || "N/A",
+              guestEmail: data["Email Address"] || "N/A",
+              confirmationId: data["confirmationId"] || "N/A",
+              checkIn: data["Check-In Date"]
+                ? new Date(
+                    data["Check-In Date"].seconds * 1000
+                  ).toLocaleDateString("en-IN")
+                : "N/A",
+              totalPrice: data["Total Price"] || 0,
+              paymentStatus: data["Payment Status"] || "Pending",
+              paymentProofImages: urls,
+              timestamp: data.createdAt?.seconds
+                ? new Date(data.createdAt.seconds * 1000)
+                : new Date(0),
+            });
           });
         }
 
@@ -142,14 +103,6 @@ allProofs.push({
     return (
       <div className="text-center py-4">Loading guest payment data...</div>
     );
-
-
-
-
-console.log(  "Payments Data:", payments);
-
-
-
 
   return (
     <div className="payment-page-container">
@@ -252,9 +205,7 @@ console.log(  "Payments Data:", payments);
                   <p>📱 +91-{p.guestPhone}</p>
                   <p>📧 {p.guestEmail}</p>
                   <p>🆔 Confirmation ID: {p.confirmationId}</p>
-                  {/* <p>📅 Check-In: {p.checkIn}</p> */}
-                  <p>📅 Stay: {p.checkIn} → {p.checkOut}</p>
-
+                  <p>📅 Check-In: {p.checkIn}</p>
                   <p>💰 Total: ₹{p.totalPrice}</p>
                 </div>
 

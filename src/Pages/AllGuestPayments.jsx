@@ -1,16 +1,5 @@
 
 
-
-
-
-
-
-
-
-
-
-// this right
-
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase/config";
@@ -127,91 +116,26 @@ const AllGuestPayments = () => {
 
   if (loading) return <div className="text-center py-4">Loading guest payment data...</div>;
 
-
-
-
-  
   return (
     <div className="container my-4 mt-lg-5 payment-page-container p-lg-3">
       <style>{`
-  .payment-page-container {
-    margin-left: 250px;
-    margin-top: 60px;
-    max-width: calc(100% - 250px);
-    padding: 1rem;
-  }
-
-  @media (max-width: 768px) {
-    .payment-page-container {
-      margin-left: 0;
-      max-width: 100%;
-    }
-  }
-
-  .proof-image {
-    max-width: 140px;
-    max-height: 140px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    margin: 5px;
-    transition: transform 0.2s ease;
-  }
-
-  .proof-image:hover {
-    transform: scale(1.05);
-  }
-
-  .delete-btn, .delete-selected-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-weight: 500;
-    transition: background 0.2s ease;
-  }
-
-  .delete-btn:hover, .delete-selected-btn:hover {
-    background-color: #c82333;
-  }
-
-  .form-check-label {
-    font-weight: 500;
-  }
-
-  .card {
-    border: 1px solid #e3e3e3;
-    border-radius: 12px;
-    transition: box-shadow 0.2s ease;
-  }
-
-  .card:hover {
-    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-  }
-
-  .card-body p {
-    margin-bottom: 6px;
-    font-size: 0.95rem;
-  }
-
-  .card-body strong {
-    font-weight: 600;
-  }
-
-  .form-control {
-    border-radius: 10px;
-  }
-
-  .form-check-input {
-    cursor: pointer;
-  }
-
-  .delete-selected-btn {
-    font-size: 0.95rem;
-    padding: 6px 12px;
-  }
-`}</style>
-
+        .delete-btn, .delete-selected-btn {
+          background-color: #dc3545;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        .proof-image {
+          max-width: 150px;
+          max-height: 150px;
+          border-radius: 6px;
+          border: 1px solid #ccc;
+          margin-right: 10px;
+          margin-bottom: 10px;
+        }
+      `}</style>
 
       <h3 className="mb-3">📄 Guest Payment Proofs</h3>
 
@@ -311,11 +235,3 @@ const AllGuestPayments = () => {
 };
 
 export default AllGuestPayments;
-
-
-
-
-
-
-
-

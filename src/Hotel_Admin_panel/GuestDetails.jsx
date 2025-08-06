@@ -1,8 +1,5 @@
 
 
-
-
-
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
@@ -11,16 +8,6 @@ const GuestDetails = () => {
   const [guests, setGuests] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("All");
-
-  // ✅ Utility function to safely convert Firestore Timestamp or JS Date
-  const convertToDate = (val) => {
-    if (!val) return null;
-    if (val.toDate) return val.toDate();                     // Firestore Timestamp object
-    if (val.seconds) return new Date(val.seconds * 1000);   // Firestore raw object
-    if (typeof val === "string" || typeof val === "number")
-      return new Date(val);                                 // String or number
-    return null;
-  };
 
   useEffect(() => {
     const fetchAllGuestsWithProofs = async () => {
@@ -71,11 +58,11 @@ const GuestDetails = () => {
     const active = [], previous = [], cancelled = [];
 
     guests.forEach((guest) => {
-      const checkoutDate = convertToDate(guest["Check-Out Date"]);
+      const checkoutDate = guest["Check-Out Date"]?.toDate?.();
       const status = guest["Status"];
 
       if (status === "Cancelled") cancelled.push(guest);
-      else if (checkoutDate && checkoutDate > now) active.push(guest);
+      else if (checkoutDate > now) active.push(guest);
       else previous.push(guest);
     });
 
@@ -84,7 +71,7 @@ const GuestDetails = () => {
 
   const sortedGuests = (guests) =>
     guests.sort((a, b) =>
-      convertToDate(b["Check-In Date"]) - convertToDate(a["Check-In Date"])
+      b["Check-In Date"]?.toDate?.() - a["Check-In Date"]?.toDate?.()
     );
 
   const { active, previous, cancelled } = categorizeGuests(guests);
@@ -93,9 +80,12 @@ const GuestDetails = () => {
   const filteredCancelled = filterGuests(sortedGuests(cancelled));
 
   const renderBookingCard = (title, guest) => {
-    const checkInDate = convertToDate(guest["Check-In Date"]);
-    const checkOutDate = convertToDate(guest["Check-Out Date"]);
-    const proofImages = guest.allProofUrls?.length ? guest.allProofUrls : [];
+    const checkInDate = guest["Check-In Date"]?.toDate?.();
+    const checkOutDate = guest["Check-Out Date"]?.toDate?.();
+
+    const proofImages = guest.allProofUrls?.length
+      ? guest.allProofUrls
+      : [];
 
     return (
       <div className="card mb-4" key={guest.id}>
@@ -125,7 +115,7 @@ const GuestDetails = () => {
             <div className="col-md-6">
               <div className="mb-3">
                 <div className="text-muted small">Check-In Date</div>
-                <div>{checkInDate ? checkInDate.toLocaleDateString() : "N/A"}</div>
+                <div>{checkInDate?.toLocaleDateString() || "N/A"}</div>
               </div>
               <div className="mb-3">
                 <div className="text-muted small">Booking Status</div>
@@ -139,7 +129,7 @@ const GuestDetails = () => {
             <div className="col-md-6">
               <div className="mb-3">
                 <div className="text-muted small">Check-Out Date</div>
-                <div>{checkOutDate ? checkOutDate.toLocaleDateString() : "N/A"}</div>
+                <div>{checkOutDate?.toLocaleDateString() || "N/A"}</div>
               </div>
               <div className="mb-3">
                 <div className="text-muted small">Payment Status</div>
@@ -166,6 +156,29 @@ const GuestDetails = () => {
               </div>
             </div>
           ))}
+
+          {proofImages.length > 0 && (
+            <div className="mt-4">
+              <p className="mb-1 fw-bold text-muted">Payment Proof Screenshots</p>
+              <div className="d-flex flex-wrap gap-3">
+                {proofImages.map((url, idx) => (
+                  <a
+                    key={idx}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={url}
+                      alt={`Proof ${idx + 1}`}
+                      className="img-fluid border rounded"
+                      style={{ maxWidth: "200px" }}
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -176,19 +189,25 @@ const GuestDetails = () => {
 
     if (selectedFilter === "All" || selectedFilter === "Active") {
       guestList = guestList.concat(
-        filteredActive.map((guest) => renderBookingCard("Active Booking", guest))
+        filteredActive.map((guest) =>
+          renderBookingCard("Active Booking", guest)
+        )
       );
     }
 
     if (selectedFilter === "All" || selectedFilter === "Previous") {
       guestList = guestList.concat(
-        filteredPrevious.map((guest) => renderBookingCard("Previous Booking", guest))
+        filteredPrevious.map((guest) =>
+          renderBookingCard("Previous Booking", guest)
+        )
       );
     }
 
     if (selectedFilter === "All" || selectedFilter === "Cancelled") {
       guestList = guestList.concat(
-        filteredCancelled.map((guest) => renderBookingCard("Cancelled Booking", guest))
+        filteredCancelled.map((guest) =>
+          renderBookingCard("Cancelled Booking", guest)
+        )
       );
     }
 
@@ -256,14 +275,4 @@ const GuestDetails = () => {
   );
 };
 
-
-
-
 export default GuestDetails;
-
-
-
-
-
-
-
