@@ -115,6 +115,10 @@ const AllGuestPayments = () => {
 
   if (loading) return <div className="text-center py-4">Loading guest payment data...</div>;
 
+
+
+  console.log("Filtered Uploads:", filteredUploads);
+  
   return (
     <div className="container my-4 mt-lg-5 payment-page-container p-lg-3">
       <style>{`
@@ -135,6 +139,101 @@ const AllGuestPayments = () => {
           margin-bottom: 10px;
         }
       `}</style>
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+        <style>{`
+        .payment-page-container {
+          margin-left: 250px;
+          margin-top: 60px;
+          max-width: calc(100% - 250px);
+        }
+        .payment-card {
+          background: white;
+          border-radius: 10px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          margin-bottom: 1rem;
+        }
+        .payment-header {
+          padding: 1rem;
+        }
+        .payment-content {
+          padding: 1.5rem;
+        }
+        .payment-field {
+          margin-bottom: 1rem;
+        }
+        .payment-label {
+          font-weight: 500;
+          margin-bottom: 0.25rem;
+          display: block;
+        }
+        .save-button {
+          background: #038A5E;
+          color: white;
+          border: none;
+          padding: 0.75rem 2rem;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        .status-select {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+        }
+        .proof-image {
+          max-width: 200px;
+          max-height: 200px;
+          margin-right: 10px;
+          margin-top: 10px;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+        }
+        .search-input {
+          padding: 0.75rem;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          width: 100%;
+          max-width: 400px;
+          margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+          .payment-page-container {
+            margin-left: 0;
+            margin-top: 0;
+            max-width: 100%;
+            padding: 1rem;
+          }
+        }
+      `}</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       <h3 className="mb-3">📄 Guest Payment Proofs</h3>
 
