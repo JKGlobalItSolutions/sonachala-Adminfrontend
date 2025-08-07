@@ -102,7 +102,7 @@ const GuestDetails = () => {
 
     const checkInDate = parseDate(guest["Check-In Date"]);
     const checkOutDate = parseDate(guest["Check-Out Date"]);
-    const proofImages = guest.allProofUrls?.length ? guest.allProofUrls : [];
+    // const proofImages = guest.allProofUrls?.length ? guest.allProofUrls : [];
 
     console.log(guest);
 
@@ -176,6 +176,9 @@ const GuestDetails = () => {
             </div>
           ))}
 
+
+
+{/* 
           {proofImages.length > 0 && (
             <div className="mt-4">
               <p className="mb-1 fw-bold text-muted">
@@ -199,7 +202,10 @@ const GuestDetails = () => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
+
+
+
         </div>
       </div>
     );

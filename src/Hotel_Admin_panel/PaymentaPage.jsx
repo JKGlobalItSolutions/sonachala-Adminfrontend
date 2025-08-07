@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { toast } from "react-toastify";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const PaymentPage = () => {
   const [payments, setPayments] = useState([]);
@@ -50,6 +49,13 @@ const PaymentPage = () => {
                     data["Check-In Date"].seconds * 1000
                   ).toLocaleDateString("en-IN")
                 : "N/A",
+
+              checkOut: data["Check-Out Date"]
+                ? new Date(
+                    data["Check-Out Date"].seconds * 1000
+                  ).toLocaleDateString("en-IN")
+                : "N/A",
+
               totalPrice: data["Total Price"] || 0,
               paymentStatus: data["Payment Status"] || "Pending",
               paymentProofImages: urls,
@@ -207,6 +213,8 @@ const PaymentPage = () => {
                   <p>📧 {p.guestEmail}</p>
                   <p>🆔 Confirmation ID: {p.confirmationId}</p>
                   <p>📅 Check-In: {p.checkIn}</p>
+                  <p>📅 Check-Out: {p.checkOut}</p>
+
                   <p>💰 Total: ₹{p.totalPrice}</p>
                 </div>
 
