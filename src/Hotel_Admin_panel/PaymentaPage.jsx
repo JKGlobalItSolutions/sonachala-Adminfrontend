@@ -9,6 +9,7 @@ const PaymentPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusChanges, setStatusChanges] = useState({});
+  const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() => {
     const fetchAllGuestProofs = async () => {
@@ -49,13 +50,6 @@ const PaymentPage = () => {
                     data["Check-In Date"].seconds * 1000
                   ).toLocaleDateString("en-IN")
                 : "N/A",
-
-              checkOut: data["Check-Out Date"]
-                ? new Date(
-                    data["Check-Out Date"].seconds * 1000
-                  ).toLocaleDateString("en-IN")
-                : "N/A",
-
               totalPrice: data["Total Price"] || 0,
               paymentStatus: data["Payment Status"] || "Pending",
               paymentProofImages: urls,
@@ -100,16 +94,18 @@ const PaymentPage = () => {
     }
   };
 
-  const filteredPayments = payments.filter((p) =>
-    `${p.guestName} ${p.guestEmail} ${p.guestPhone} ${p.confirmationId}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const filteredPayments = payments
+    .filter((p) =>
+      `${p.guestName} ${p.guestEmail} ${p.guestPhone} ${p.confirmationId}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    )
+    .filter((p) =>
+      statusFilter === "All" ? true : p.paymentStatus === statusFilter
+    );
 
   if (loading)
-    return (
-      <div className="text-center py-4">Loading guest payment data...</div>
-    );
+    return <div className="text-center py-4">Loading guest payment data...</div>;
 
   return (
     <div className="payment-page-container">
@@ -169,6 +165,18 @@ const PaymentPage = () => {
           max-width: 400px;
           margin-bottom: 1rem;
         }
+        .filter-section {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+        .filter-select {
+          padding: 0.5rem;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+        }
         @media (max-width: 768px) {
           .payment-page-container {
             margin-left: 0;
@@ -180,8 +188,6 @@ const PaymentPage = () => {
       `}</style>
 
       <div className="container py-4">
-        {/* <h3 className="mb-4">🧾 All Guest Payments</h3> */}
-
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="mb-0">Payment Details</h2>
           <Link to="/AllGuestPayments" title="All Guest Payments">
@@ -189,13 +195,24 @@ const PaymentPage = () => {
           </Link>
         </div>
 
-        <input
-          type="text"
-          placeholder="🔍 Search by name, email, phone or confirmation ID"
-          className="search-input"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="filter-section">
+          <input
+            type="text"
+            placeholder="🔍 Search by name, email, phone or confirmation ID"
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <select
+            className="filter-select"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="All">All Payments</option>
+            <option value="Pending">Pending</option>
+            <option value="Paid">Paid</option>
+          </select>
+        </div>
 
         {filteredPayments.length === 0 ? (
           <p>No matching records found.</p>
@@ -213,8 +230,6 @@ const PaymentPage = () => {
                   <p>📧 {p.guestEmail}</p>
                   <p>🆔 Confirmation ID: {p.confirmationId}</p>
                   <p>📅 Check-In: {p.checkIn}</p>
-                  <p>📅 Check-Out: {p.checkOut}</p>
-
                   <p>💰 Total: ₹{p.totalPrice}</p>
                 </div>
 
