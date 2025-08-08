@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
+import { db, auth } from "../firebase/config"; // auth added
 import { toast } from "react-toastify";
+import { getAuth } from "firebase/auth";
 import { Link } from "react-router-dom";
 
 const PaymentPage = () => {
@@ -12,68 +13,74 @@ const PaymentPage = () => {
   const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() => {
-    const fetchAllGuestProofs = async () => {
-      try {
-        const hotelsSnapshot = await getDocs(collection(db, "Hotels"));
-        const allProofs = [];
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      toast.error("User not logged in");
+      setLoading(false);
+      return;
+    }
 
-        for (const hotelDoc of hotelsSnapshot.docs) {
-          const userId = hotelDoc.id;
-          const guestDetailsRef = collection(
-            db,
-            "Hotels",
+    const userId = currentUser.uid;
+    const guestDetailsRef = collection(db, "Hotels", userId, "Guest Details");
+
+    // Real-time listener for this hotel's guest details
+    const unsubscribe = onSnapshot(
+      guestDetailsRef,
+      (guestDetailsSnapshot) => {
+        const proofs = [];
+
+        guestDetailsSnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const proofArray = Array.isArray(data["Payment Proof"])
+            ? data["Payment Proof"]
+            : [];
+          const urls = proofArray.map((item) => item.url).filter(Boolean);
+
+          if (data.latestProofUrl && !urls.includes(data.latestProofUrl)) {
+            urls.push(data.latestProofUrl);
+          }
+
+          proofs.push({
+            id: docSnap.id,
             userId,
-            "Guest Details"
-          );
-          const guestDetailsSnapshot = await getDocs(guestDetailsRef);
-
-          guestDetailsSnapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            const proofArray = Array.isArray(data["Payment Proof"])
-              ? data["Payment Proof"]
-              : [];
-            const urls = proofArray.map((item) => item.url).filter(Boolean);
-
-            if (data.latestProofUrl && !urls.includes(data.latestProofUrl)) {
-              urls.push(data.latestProofUrl);
-            }
-
-            allProofs.push({
-              id: docSnap.id,
-              userId,
-              guestName: data["Full Name"] || "Guest",
-              guestPhone: data["Phone Number"] || "N/A",
-              guestEmail: data["Email Address"] || "N/A",
-              confirmationId: data["confirmationId"] || "N/A",
-              checkIn: data["Check-In Date"]
-                ? new Date(
-                    data["Check-In Date"].seconds * 1000
-                  ).toLocaleDateString("en-IN")
-                : "N/A",
-              totalPrice: data["Total Price"] || 0,
-              paymentStatus: data["Payment Status"] || "Pending",
-              paymentProofImages: urls,
-              timestamp: data.createdAt?.seconds
-                ? new Date(data.createdAt.seconds * 1000)
-                : new Date(0),
-            });
+            guestName: data["Full Name"] || "Guest",
+            guestPhone: data["Phone Number"] || "N/A",
+            guestEmail: data["Email Address"] || "N/A",
+            confirmationId: data["confirmationId"] || "N/A",
+            checkIn: data["Check-In Date"]
+              ? new Date(
+                  data["Check-In Date"].seconds * 1000
+                ).toLocaleDateString("en-IN")
+              : "N/A",
+            checkOut: data["Check-Out Date"]
+              ? new Date(
+                  data["Check-Out Date"].seconds * 1000
+                ).toLocaleDateString("en-IN")
+              : "N/A",
+            totalPrice: data["Total Price"] || 0,
+            paymentStatus: data["Payment Status"] || "Pending",
+            paymentProofImages: urls,
+            timestamp: data.createdAt?.seconds
+              ? new Date(data.createdAt.seconds * 1000)
+              : new Date(0),
           });
-        }
+        });
 
-        const sorted = allProofs.sort(
+        const sorted = proofs.sort(
           (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
         );
 
         setPayments(sorted);
-      } catch (error) {
+        setLoading(false);
+      },
+      (error) => {
         console.error("❌ Error fetching payment data:", error);
         toast.error("Failed to fetch guest payment details");
-      } finally {
         setLoading(false);
       }
-    };
+    );
 
-    fetchAllGuestProofs();
+    return () => unsubscribe();
   }, []);
 
   const handleStatusChange = async (userId, guestId, newStatus) => {
@@ -105,7 +112,11 @@ const PaymentPage = () => {
     );
 
   if (loading)
-    return <div className="text-center py-4">Loading guest payment data...</div>;
+    return (
+      <div className="text-center py-4">Loading guest payment data...</div>
+    );
+
+  console.log("Rendering PaymentPage with payments:", payments);
 
   return (
     <div className="payment-page-container">
@@ -195,7 +206,7 @@ const PaymentPage = () => {
           </Link>
         </div>
 
-        <div className="filter-section">
+        <div className="filter-section d-flex justify-content-between align-items-center mb-4">
           <input
             type="text"
             placeholder="🔍 Search by name, email, phone or confirmation ID"
@@ -203,6 +214,7 @@ const PaymentPage = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+
           <select
             className="filter-select"
             value={statusFilter}
@@ -212,6 +224,7 @@ const PaymentPage = () => {
             <option value="Pending">Pending</option>
             <option value="Paid">Paid</option>
           </select>
+
         </div>
 
         {filteredPayments.length === 0 ? (
@@ -230,6 +243,8 @@ const PaymentPage = () => {
                   <p>📧 {p.guestEmail}</p>
                   <p>🆔 Confirmation ID: {p.confirmationId}</p>
                   <p>📅 Check-In: {p.checkIn}</p>
+                  <p>📅 Check-Out: {p.checkOut}</p>
+
                   <p>💰 Total: ₹{p.totalPrice}</p>
                 </div>
 

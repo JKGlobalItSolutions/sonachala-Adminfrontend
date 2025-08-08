@@ -13,7 +13,7 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 
 
-// import AllGuestPayments from "./Pages/AllGuestPayments";
+import AllGuestPayments from "./Pages/AllGuestPayments";
 
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
@@ -141,10 +141,10 @@ function App() {
 
  {/* ----------- */}
 
-              {/* <Route
+              <Route
                 path="/AllGuestPayments"
                 element={<AllGuestPayments />}
-              /> */}
+              />
 
               {/* ----------- */}
 
