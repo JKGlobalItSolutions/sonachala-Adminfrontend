@@ -224,7 +224,6 @@ const PaymentPage = () => {
             <option value="Pending">Pending</option>
             <option value="Paid">Paid</option>
           </select>
-
         </div>
 
         {filteredPayments.length === 0 ? (
@@ -238,14 +237,23 @@ const PaymentPage = () => {
             return (
               <div key={uniqueKey} className="payment-card card">
                 <div className="payment-header card-body">
-                  <h5>👤 {p.guestName}</h5>
+                  {/* <h5>👤 {p.guestName}</h5> */}
+
+                  <h5>
+                    👤 {p.guestName}{" "}
+                    {currentStatus?.toLowerCase().trim() === "paid" && (
+                  
+                    <i className="bi bi-patch-check-fill" style={{ color: "green" }}></i>
+                    )}
+                  </h5>
+
                   <p>📱 +91-{p.guestPhone}</p>
                   <p>📧 {p.guestEmail}</p>
                   <p>🆔 Confirmation ID: {p.confirmationId}</p>
                   <p>📅 Check-In: {p.checkIn}</p>
                   <p>📅 Check-Out: {p.checkOut}</p>
 
-                  <p>💰 Total: ₹{p.totalPrice}</p>
+                  <p className="fw-bold">💰 Total: ₹{p.totalPrice}</p>
                 </div>
 
                 <div className="payment-content">
